@@ -27,7 +27,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.robinmayo.crossingroads.MainActivity">
+        <activity android:name="com.robinmayo.crossingroads.WorldActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -53,9 +53,6 @@
         <service android:name="com.robinmayo.crossingroads.UnboundedService"
             android:enabled="true"></service>
 
-        <activity
-            android:name="com.robinmayo.crossingroads.WorldActivity"
-            android:label="@string/title_activity_world" />
         <activity
             android:name="com.robinmayo.crossingroads.ProfileActivity"
             android:label="@string/title_activity_profile" />

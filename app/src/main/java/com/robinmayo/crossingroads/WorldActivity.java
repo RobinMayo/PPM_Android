@@ -1,7 +1,11 @@
 package com.robinmayo.crossingroads;
 
+import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -9,21 +13,72 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.robinmayo.crossingroads.R;
 
 
-public class WorldActivity extends FragmentActivity implements OnMapReadyCallback {
+public class WorldActivity extends FragmentActivity implements OnMapReadyCallback,
+        View.OnClickListener {
+    private static final String TAG = "UnboundedService";
 
-    private GoogleMap mMap;
+    protected FloatingActionButton profileButton;
+    protected FloatingActionButton scoreButton;
+    protected GoogleMap mMap;
+    private Intent musicIntent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_world);
+
+        // Music :
+        musicIntent = new Intent(this, UnboundedService.class);
+        this.startService(musicIntent);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        // Buttons :
+        profileButton = findViewById(R.id.profileButton);
+        scoreButton = findViewById(R.id.scoreButton);
+        profileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("View.OnClickListener()", "onClick button "+R.id.profileButton);
+                Intent intent = new Intent(WorldActivity.this, ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
+        scoreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("View.OnClickListener()", "onClick button "+R.id.scoreButton);
+                Intent intent = new Intent(WorldActivity.this, ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    // The activity is note visible.
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause()");
+    }
+
+    // The application is note visible.
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy()");
+
+        this.stopService(musicIntent);
     }
 
 
@@ -44,5 +99,29 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
+
+    @Override
+    public void onClick(View view) {
+        Log.d(TAG, "onClick button "+R.id.profileButton);
+        Intent intent;
+
+        switch(view.getId()) {
+            case R.id.profileButton:
+                intent = new Intent(this, ProfileActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.scoreButton:
+                intent = new Intent(this, StatisticsActivity.class);
+                startActivity(intent);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
     }
 }

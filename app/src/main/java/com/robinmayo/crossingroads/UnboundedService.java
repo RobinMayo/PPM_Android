@@ -9,7 +9,7 @@ import android.util.Log;
 
 public class UnboundedService extends Service {
     private static final String TAG = "UnboundedService";
-    MediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer;
 
     @Override
     public IBinder onBind(Intent intent) {
