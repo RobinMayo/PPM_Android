@@ -4,9 +4,11 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.IBinder;
+import android.util.Log;
 
 
 public class UnboundedService extends Service {
+    private static final String TAG = "UnboundedService";
     MediaPlayer mediaPlayer;
 
     @Override
@@ -14,7 +16,10 @@ public class UnboundedService extends Service {
         return null;
     }
 
-    public void onCreat() {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.d(TAG, "onCreat()");
         mediaPlayer = MediaPlayer.create(this, R.raw.on_the_run);
         mediaPlayer.setLooping(false);
     }
@@ -26,6 +31,7 @@ public class UnboundedService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startID) {
+        Log.d(TAG, "onStartCommand(Intent intent, int flags, int startID)");
         mediaPlayer.start();
         return START_STICKY;
     }
