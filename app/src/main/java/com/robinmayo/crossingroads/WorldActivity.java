@@ -14,31 +14,35 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.File;
+
 
 public class WorldActivity extends FragmentActivity implements OnMapReadyCallback {
-    private static final String TAG = "UnboundedService";
+    private static final String TAG = "WorldActivity";
+    protected static final String GAME_FILE = "game.txt";
 
     protected FloatingActionButton profileButton;
     protected FloatingActionButton scoreButton;
     protected GoogleMap mMap;
-    private Intent musicIntent;
+    private static Intent musicIntent;
+    private static File gameFile;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.e(TAG, "onCreate(Bundle savedInstanceState)");
         setContentView(R.layout.activity_world);
 
         new Player();
 
-        // Music :
-        musicIntent = new Intent(this, UnboundedService.class);
-        this.startService(musicIntent);
+        // getApplicationContext().getFilesDir() is an internal directory in the application.
+        gameFile = new File(getApplicationContext().getFilesDir(), GAME_FILE);
+        WebParser webParser = new WebParser(gameFile);
+        webParser.execute();
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        musicIntent = new Intent(this, UnboundedService.class);
+        startService(musicIntent);
 
         // Buttons :
         profileButton = findViewById(R.id.profileButton);
@@ -54,12 +58,17 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
         scoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("View.OnClickListener()", "onClick button "+R.id.scoreButton);
+                Log.d("View.OnClickListener()", "********** goTo : StatisticsActivity");
                 Intent intent = new Intent(WorldActivity.this,
                         StatisticsActivity.class);
                 startActivity(intent);
             }
         });
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
     }
 
     // The activity is note visible.
@@ -105,6 +114,5 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
-
     }
 }

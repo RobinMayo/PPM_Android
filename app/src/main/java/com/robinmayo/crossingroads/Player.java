@@ -1,17 +1,23 @@
 package com.robinmayo.crossingroads;
 
+import android.util.Log;
+
+
 public class Player {
+    private static final String TAG = "Player";
     private static String name;
     private static String motto;
     private static int level;
 
     public Player() {
+        Log.e(TAG, "Player()");
         Player.name = "";
         Player.motto = "";
         Player.level = 0;
     }
 
     public Player(String name, String motto) {
+        Log.e(TAG, "Player(String name, String motto)");
         Player.name = name;
         Player.motto = motto;
         Player.level = 0;
