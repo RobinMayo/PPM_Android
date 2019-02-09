@@ -15,8 +15,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
-public class WorldActivity extends FragmentActivity implements OnMapReadyCallback,
-        View.OnClickListener {
+public class WorldActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final String TAG = "UnboundedService";
 
     protected FloatingActionButton profileButton;
@@ -29,6 +28,8 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_world);
+
+        new Player();
 
         // Music :
         musicIntent = new Intent(this, UnboundedService.class);
@@ -45,7 +46,7 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("View.OnClickListener()", "onClick button "+R.id.profileButton);
+                Log.d("View.OnClickListener()", "********** goTo : ProfileActivity");
                 Intent intent = new Intent(WorldActivity.this, ProfileActivity.class);
                 startActivity(intent);
             }
@@ -54,7 +55,8 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
                 Log.d("View.OnClickListener()", "onClick button "+R.id.scoreButton);
-                Intent intent = new Intent(WorldActivity.this, ProfileActivity.class);
+                Intent intent = new Intent(WorldActivity.this,
+                        StatisticsActivity.class);
                 startActivity(intent);
             }
         });
@@ -99,25 +101,6 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-    }
-
-    @Override
-    public void onClick(View view) {
-        Log.d(TAG, "onClick button "+R.id.profileButton);
-        Intent intent;
-
-        switch(view.getId()) {
-            case R.id.profileButton:
-                intent = new Intent(this, ProfileActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.scoreButton:
-                intent = new Intent(this, StatisticsActivity.class);
-                startActivity(intent);
-                break;
-            default:
-                break;
-        }
     }
 
     @Override

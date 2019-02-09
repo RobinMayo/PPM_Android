@@ -14,11 +14,11 @@
     -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-
-    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <!-- To auto-complete the email text field in the login form with the user's emails
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    -->
 
     <application
         android:allowBackup="true"
@@ -30,8 +30,17 @@
         <activity android:name="com.robinmayo.crossingroads.WorldActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+
+                <!--
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host=""
+                    android:scheme="example" />
+                -->
             </intent-filter>
         </activity>
         <activity android:name="com.robinmayo.crossingroads.GameActivity" />
@@ -49,14 +58,14 @@
         <uses-library android:name="com.google.android.maps" />
 
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
-        
+
         <service android:name="com.robinmayo.crossingroads.UnboundedService"
-            android:enabled="true"></service>
+            android:enabled="true" />
 
         <activity
             android:name="com.robinmayo.crossingroads.ProfileActivity"
             android:label="@string/title_activity_profile" />
-        <activity android:name="com.robinmayo.crossingroads.StatisticsActivity"></activity>
+        <activity android:name="com.robinmayo.crossingroads.StatisticsActivity" />
     </application>
 
 </manifest>

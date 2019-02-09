@@ -21,7 +21,7 @@ public class UnboundedService extends Service {
         super.onCreate();
         Log.d(TAG, "onCreat()");
         mediaPlayer = MediaPlayer.create(this, R.raw.on_the_run);
-        mediaPlayer.setLooping(false);
+        mediaPlayer.setLooping(true);
     }
 
     @Override

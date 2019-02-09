@@ -1,66 +1,41 @@
 package com.robinmayo.crossingroads;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
+import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
-
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class ProfileActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class ProfileActivity extends AppCompatActivity /*implements LoaderCallbacks<Cursor> */{
 
-    /**
-     * Id to identity READ_CONTACTS permission request.
-     */
-    private static final int REQUEST_READ_CONTACTS = 0;
+    private static final String TAG = "ProfileActivity";
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
+    private static UserLoginTask mAuthTask = null;
 
     // UI references.
     private AutoCompleteTextView nameView;
     private EditText mottoView;
     private View mProgressView;
-    private View mLoginFormView;
+    FloatingActionButton nameSignInButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +43,13 @@ public class ProfileActivity extends AppCompatActivity implements LoaderCallback
         setContentView(R.layout.activity_profile);
         // Set up the login form.
         nameView = findViewById(R.id.name);
-        populateAutoComplete();
-
         mottoView = findViewById(R.id.motto);
+
         mottoView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                Log.d(TAG, "mottoView.setOnEditorActionListener" +
+                        "(new TextView.OnEditorActionListener()");
                 if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
                     attemptLogin();
                     return true;
@@ -82,61 +58,44 @@ public class ProfileActivity extends AppCompatActivity implements LoaderCallback
             }
         });
 
-        FloatingActionButton nameSignInButton = findViewById(R.id.name_sign_in_button);
+        nameSignInButton = findViewById(R.id.name_sign_in_button);
         nameSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                //attemptLogin();
+                Intent intent = new Intent(ProfileActivity.this, WorldActivity.class);
+                startActivity(intent);
             }
         });
-
-        //mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
 
-    private void populateAutoComplete() {
-        if (!mayRequestContacts()) {
-            return;
-        }
-
-        getLoaderManager().initLoader(0, null, this);
-    }
-
-    private boolean mayRequestContacts() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(nameView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new View.OnClickListener() {
-                        @Override
-                        @TargetApi(Build.VERSION_CODES.M)
-                        public void onClick(View v) {
-                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-                        }
-                    });
-        } else {
-            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-        }
-        return false;
-    }
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_READ_CONTACTS) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete();
-            }
+    protected void onResume() {
+        super.onResume();
+
+        // Initialise Player Ids :
+        if (!Player.getName().equals("") && !Player.getMotto().equals("")) {
+            nameView.setText(Player.getName());
+            mottoView.setText(Player.getMotto());
         }
     }
 
+    // The application is note visible.
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "onStop("+nameView.getText().toString()+
+                ", "+mottoView.getText().toString()+")");
+        super.onStop();
+    }
+
+    // The activity is note visible.
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause("+nameView.getText().toString()+
+                ", "+mottoView.getText().toString()+")");
+    }
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -144,6 +103,8 @@ public class ProfileActivity extends AppCompatActivity implements LoaderCallback
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
+        Log.d(TAG, "attemptLogin()");
+
         if (mAuthTask != null) {
             return;
         }
@@ -153,26 +114,26 @@ public class ProfileActivity extends AppCompatActivity implements LoaderCallback
         mottoView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = nameView.getText().toString();
-        String password = mottoView.getText().toString();
+        String name = nameView.getText().toString();
+        String motto = mottoView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mottoView.setError(getString(R.string.error_invalid_password));
+        // Check for a valid motto, if the user entered one.
+        if (!TextUtils.isEmpty(motto) && !isMottoValid(motto)) {
+            mottoView.setError(getString(R.string.error_invalid_motto));
             focusView = mottoView;
             cancel = true;
         }
 
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
+        // Check for a valid name.
+        if (TextUtils.isEmpty(name)) {
             nameView.setError(getString(R.string.error_field_required));
             focusView = nameView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
-            nameView.setError(getString(R.string.error_invalid_email));
+        } else if (!isNameValid(name)) {
+            nameView.setError(getString(R.string.error_invalid_name));
             focusView = nameView;
             cancel = true;
         }
@@ -184,20 +145,20 @@ public class ProfileActivity extends AppCompatActivity implements LoaderCallback
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
+            Log.d(TAG, "attemptLogin - new UserLoginTask(name, motto);");
+
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserLoginTask(name, motto);
             mAuthTask.execute((Void) null);
         }
     }
 
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@");
+    private boolean isNameValid(String name) {
+        return name.length() > 1;
     }
 
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
+    private boolean isMottoValid(String motto) {
+        return motto.length() > 3;
     }
 
     /**
@@ -205,138 +166,46 @@ public class ProfileActivity extends AppCompatActivity implements LoaderCallback
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(this,
-                // Retrieve data rows for the device user's 'profile' contact.
-                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
-                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
-
-                // Select only email addresses.
-                ContactsContract.Contacts.Data.MIMETYPE +
-                        " = ?", new String[]{ContactsContract.CommonDataKinds.Email
-                .CONTENT_ITEM_TYPE},
-
-                // Show primary email addresses first. Note that there won't be
-                // a primary email address if the user hasn't specified one.
-                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        List<String> emails = new ArrayList<>();
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            emails.add(cursor.getString(ProfileQuery.ADDRESS));
-            cursor.moveToNext();
-        }
-
-        addEmailsToAutoComplete(emails);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-
-    }
-
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(ProfileActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-
-        nameView.setAdapter(adapter);
-    }
-
-
-    private interface ProfileQuery {
-        String[] PROJECTION = {
-                ContactsContract.CommonDataKinds.Email.ADDRESS,
-                ContactsContract.CommonDataKinds.Email.IS_PRIMARY,
-        };
-
-        int ADDRESS = 0;
-        int IS_PRIMARY = 1;
+        // The ViewPropertyAnimator APIs are not available, so simply show
+        // and hide the relevant UI components.
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    private class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
-        private final String mPassword;
+        private final String name;
+        private final String motto;
 
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
+        UserLoginTask(String name, String motto) {
+            this.name = name;
+            this.motto = motto;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+            Log.d(TAG, "doInBackground(...) : "+name+", "+motto+".");
 
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
+            Player.setName(name);
+            Player.setMotto(motto);
+            Player.setLevel(0);
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
             return true;
         }
 
         @Override
         protected void onPostExecute(final Boolean success) {
+            Log.d(TAG, "onPostExecute(...)");
             mAuthTask = null;
             showProgress(false);
 
             if (success) {
+                Log.d(TAG, "onPostExecute(...) : SUCCESS");
+                //setContentView(R.layout.activity_profile);
                 finish();
-            } else {
-                mottoView.setError(getString(R.string.error_incorrect_password));
-                mottoView.requestFocus();
             }
         }
 
