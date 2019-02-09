@@ -15,7 +15,7 @@ import java.nio.channels.ReadableByteChannel;
 
 
 public class WebParser extends AsyncTask<Void, Void, Boolean> {
-    private static final String TAG = "AsyncMusicPlayer";
+    private static final String TAG = "WebParser";
     private static final String FILE_PATH
             = "https://www.lrde.epita.fr/~renault/teaching/ppm/2018/game.txt";
 
