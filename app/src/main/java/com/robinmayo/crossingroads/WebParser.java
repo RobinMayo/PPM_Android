@@ -12,6 +12,7 @@ import java.io.LineNumberReader;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.Arrays;
 
 
 public class WebParser extends AsyncTask<Void, Void, Boolean> {
@@ -21,7 +22,7 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
 
     private static File gameFile;
 
-    public WebParser(File file) {
+    WebParser(File file) {
         WebParser.gameFile = file;
     }
 
@@ -29,6 +30,36 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
     protected Boolean doInBackground(Void... params) {
         Log.d(TAG, "doInBackground(...)");
 
+        // Download file : "https://www.lrde.epita.fr/~renault/teaching/ppm/2018/game.txt"
+        downloadGameFile();
+
+        // Parse game file and set levels :
+        InputStreamReader inputStreamReader;
+        LineNumberReader lineNumberReader;
+        String myLine;
+        String[] parcedLine;
+        try {
+            inputStreamReader = new InputStreamReader(new FileInputStream(gameFile));
+            lineNumberReader = new LineNumberReader(inputStreamReader);
+
+            int indice = 0;
+            while ((myLine = lineNumberReader.readLine()) != null) {
+                Log.d(TAG, myLine);
+                parcedLine = myLine.split("#");
+                Log.i(TAG, Arrays.toString(parcedLine));
+                saveLevel(parcedLine, indice);
+                indice++;
+            }
+            lineNumberReader.close();
+            inputStreamReader.close();
+        }catch (Exception e) {
+            System.err.println("Error : "+e.getMessage());
+        }
+
+        return true;
+    }
+
+    private void downloadGameFile() {
         URL url;
         try {
             url = new URL(FILE_PATH);
@@ -40,24 +71,21 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
-        InputStreamReader inputStreamReader;
-        LineNumberReader lineNumberReader;
-        String myLine;
-        try {
-            inputStreamReader = new InputStreamReader(new FileInputStream(gameFile));
-            lineNumberReader = new LineNumberReader(inputStreamReader);
-
-            while ((myLine = lineNumberReader.readLine()) != null) {
-                Log.i(TAG, myLine);
-            }
-            lineNumberReader.close();
-            inputStreamReader.close();
-        }catch (Exception e) {
-            System.err.println("Error : "+e.getMessage());
+    private void saveLevel(String[] parcedLine, int indice) {
+        if (parcedLine.length < 8) {
+            Log.e(TAG, "ERROR in saveLevel(String[] parcedLine) : level can not be created.");
+        } else if (parcedLine.length > 8) {
+            Log.w(TAG, "WARNING in saveLevel(String[] parcedLine) : too much information." +
+                    "A part of the riding line is ignored.");
         }
-
-        return true;
+        if (parcedLine.length == 8) {
+            Level level = new Level(parcedLine[0], parcedLine[1], parcedLine[2],
+                    Integer.parseInt(parcedLine[3]),  parcedLine[4], parcedLine[5], parcedLine[6],
+                    parcedLine[7]);
+            LevelDescription.setLevel(level, indice);
+        }
     }
 
     @Override

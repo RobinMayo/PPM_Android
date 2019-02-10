@@ -1,11 +1,11 @@
 package com.robinmayo.crossingroads;
 
 public class LevelDescription {
-    private Level[] levels;
-    private int nbLevels = 0;
+    private static Level[] levels;
+    private static int nbLevels = 0;
 
     public LevelDescription(int nbLevels) {
-        this.nbLevels = nbLevels;
+        LevelDescription.nbLevels = nbLevels;
         levels = new Level[nbLevels];
     }
 
@@ -15,14 +15,14 @@ public class LevelDescription {
      *
      * Warning : can return null. Think to test return value.
      */
-    public Level getLevel(int indice) {
+    public static Level getLevel(int indice) {
         if (indice < nbLevels) {
             return levels[indice];
         }
         return null;
     }
 
-    public void setLevel(Level level, int indice) {
+    public static void setLevel(Level level, int indice) {
         if (indice < nbLevels) {
             levels[indice] = level;
         }
