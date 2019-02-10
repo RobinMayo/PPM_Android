@@ -3,6 +3,8 @@ package com.robinmayo.crossingroads;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -23,6 +25,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 
 public class WorldActivity extends FragmentActivity implements OnMapReadyCallback,
@@ -178,7 +183,7 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
                 };
                 // Register the listener with the Location Manager to receive location updates.
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                        10000, 0, locationListener);
+                        20000, 0, locationListener);
             } else {
                 Log.e(TAG, "ERROR in onMapReady(GoogleMap googleMap) : can not acces to user"
                         + "location by locationManager. The game is not playable !");
@@ -206,5 +211,17 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
     private void makeUseOfNewLocation(Location location) {
         Log.i(TAG, "makeUseOfNewLocation - User is located at : latitude = " +
                 location.getLatitude() + ", longitude " + location.getLongitude() + ".");
+
+        Geocoder geoCoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> address = geoCoder.getFromLocation(location.getLatitude(),
+                    location.getLongitude(), 1);
+            Log.i(TAG, "makeUseOfNewLocation - " + address.get(0).getLocality());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        catch (NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 }
