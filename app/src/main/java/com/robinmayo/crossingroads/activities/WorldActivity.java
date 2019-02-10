@@ -1,4 +1,4 @@
-package com.robinmayo.crossingroads;
+package com.robinmayo.crossingroads.activities;
 
 import android.Manifest;
 import android.content.Intent;
@@ -25,7 +25,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.robinmayo.crossingroads.activities.GameActivity;
+import com.robinmayo.crossingroads.Level;
+import com.robinmayo.crossingroads.LevelDescription;
+import com.robinmayo.crossingroads.Player;
+import com.robinmayo.crossingroads.R;
+import com.robinmayo.crossingroads.UnboundedService;
+import com.robinmayo.crossingroads.WebParser;
 import com.robinmayo.crossingroads.interfaces.TaskDelegate;
 
 import java.io.File;

@@ -2,7 +2,7 @@ package com.robinmayo.crossingroads;
 
 import android.util.Log;
 
-class LevelDescription {
+public class LevelDescription {
     private static final String TAG = "LevelDescription";
     private static int nbLevels = 5;
     private static Level[] levels = new Level[nbLevels];
@@ -20,7 +20,7 @@ class LevelDescription {
      *
      * Warning : can return null. Think to test return value.
      */
-    static Level getLevel(int indice) {
+    public static Level getLevel(int indice) {
         if (indice < nbLevels) {
             return levels[indice];
         }
@@ -33,7 +33,7 @@ class LevelDescription {
         }
     }
 
-    static int getNbLevels() {
+    public static int getNbLevels() {
         return nbLevels;
     }
 }

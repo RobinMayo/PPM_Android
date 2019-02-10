@@ -24,7 +24,7 @@
         android:theme="@style/AppTheme"
         android:fullBackupContent="@xml/backup_rules"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name="com.robinmayo.crossingroads.WorldActivity">
+        <activity android:name="com.robinmayo.crossingroads.activities.WorldActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -59,9 +59,9 @@
             android:enabled="true" />
 
         <activity
-            android:name="com.robinmayo.crossingroads.ProfileActivity"
+            android:name="com.robinmayo.crossingroads.activities.ProfileActivity"
             android:label="@string/title_activity_profile" />
-        <activity android:name="com.robinmayo.crossingroads.StatisticsActivity" />
+        <activity android:name="com.robinmayo.crossingroads.activities.StatisticsActivity" />
     </application>
 
 </manifest>

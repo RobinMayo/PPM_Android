@@ -28,7 +28,7 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
     //private static List<File> downLoadFileList = new ArrayList<File>();
     private File appDir;
 
-    WebParser(File appDir, File file, TaskDelegate delegate) {
+    public WebParser(File appDir, File file, TaskDelegate delegate) {
         this.appDir = appDir;
         WebParser.gameFile = file;
         this.delegate = delegate;

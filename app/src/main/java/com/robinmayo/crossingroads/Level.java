@@ -7,7 +7,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.io.File;
 
-class Level {
+public class Level {
     private static final String TAG = "Level";
 
     private String levelName;
@@ -33,20 +33,25 @@ class Level {
         point = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
     }
 
-    File getPin() {
+    public File getPin() {
         if (pin != null) {
             return pin;
         } else {
-            Log.e(TAG, "ERROR in getPin() - File pin not initialized.");
+            Log.e(TAG, "ERROR in getPin() - File pin is not initialized.");
             return new File("");
         }
     }
 
-    LatLng getPoint() {
-        return point;
+    public LatLng getPoint() {
+        if (point != null) {
+            return point;
+        } else {
+            Log.e(TAG, "ERROR in getPoint() - Point is not initialized.");
+            return new LatLng(48.866667, 2.333333);
+        }
     }
 
-    int getDifficulty() {
+    public int getDifficulty() {
         return difficulty;
     }
 }

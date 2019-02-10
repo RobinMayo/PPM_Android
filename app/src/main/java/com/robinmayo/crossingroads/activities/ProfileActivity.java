@@ -1,4 +1,4 @@
-package com.robinmayo.crossingroads;
+package com.robinmayo.crossingroads.activities;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -16,6 +16,9 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.robinmayo.crossingroads.Player;
+import com.robinmayo.crossingroads.R;
 
 
 /**
@@ -72,7 +75,7 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume("+Player.getName()+", "+Player.getMotto()+")");
+        Log.d(TAG, "onResume("+ Player.getName()+", "+Player.getMotto()+")");
 
         // Initialise Player Ids :
         if (!Player.getName().equals("") && !Player.getMotto().equals("")) {

@@ -1,4 +1,4 @@
-package com.robinmayo.crossingroads;
+package com.robinmayo.crossingroads.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
