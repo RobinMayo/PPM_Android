@@ -3,6 +3,7 @@ package com.robinmayo.crossingroads.activities;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Icon;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -64,6 +65,8 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
             addMarker();
         }
     };
+
+    public static Level currentLevel;
 
 
     @Override
@@ -246,8 +249,12 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
     public boolean onMarkerClick(Marker marker) {
         Log.i(TAG, "onMarkerClick(...) : " + marker.getTitle());
 
-        Intent intent = new Intent(WorldActivity.this, GameActivity.class);
-        startActivity(intent);
+        if (LevelDescription.getLevel(Integer.parseInt(marker.getTitle())) != null) {
+            currentLevel = LevelDescription.getLevel(Integer.parseInt(marker.getTitle()));
+            new GameActivity(LevelDescription.getLevel(Integer.parseInt(marker.getTitle())));
+            Intent intent = new Intent(WorldActivity.this, GameActivity.class);
+            startActivity(intent);
+        }
         return false;
     }
 

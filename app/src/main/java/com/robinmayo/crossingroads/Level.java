@@ -54,4 +54,16 @@ public class Level {
     public int getDifficulty() {
         return difficulty;
     }
+
+    public File getBackground() {
+        return background;
+    }
+
+    public File getToRightCar() {
+        return toRightCar;
+    }
+
+    public File getToLeftCar() {
+        return toLeftCar;
+    }
 }
