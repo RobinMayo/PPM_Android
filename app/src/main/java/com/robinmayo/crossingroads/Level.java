@@ -45,4 +45,8 @@ class Level {
     LatLng getPoint() {
         return point;
     }
+
+    int getDifficulty() {
+        return difficulty;
+    }
 }

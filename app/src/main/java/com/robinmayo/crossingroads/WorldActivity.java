@@ -23,7 +23,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.robinmayo.crossingroads.activities.GameActivity;
 import com.robinmayo.crossingroads.interfaces.TaskDelegate;
 
 import java.io.File;
@@ -33,7 +35,8 @@ import java.util.Locale;
 
 
 public class WorldActivity extends FragmentActivity implements OnMapReadyCallback,
-        GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener {
+        GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener,
+        GoogleMap.OnMarkerClickListener {
 
     private static final String[] LOCATION_PERMS = {
             Manifest.permission.ACCESS_FINE_LOCATION
@@ -137,7 +140,7 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
     }
 
 
-    /* ********** OnMapReadyCallback ********** */
+    /* **********   Implement OnMapReadyCallback :  ********** */
 
     /**
      * Manipulates the map once available.
@@ -151,6 +154,9 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setOnMarkerClickListener(this);
+        // GoogleMap.OnMapClickListener clickListener = new GoogleMap.OnMapClickListener();
+        // mMap.setOnMapClickListener(clickListener);
 
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
@@ -211,7 +217,7 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
     }
 
 
-    /* ********** GoogleMap.OnMyLocationButtonClickListener ********** */
+    /* **********   Implement GoogleMap.OnMyLocationButtonClickListener :   ********** */
 
     @Override
     public boolean onMyLocationButtonClick() {
@@ -220,7 +226,7 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
     }
 
 
-    /* ********** GoogleMap.OnMyLocationClickListener ********** */
+    /* **********   Implement GoogleMap.OnMyLocationClickListener :   ********** */
 
     @Override
     public void onMyLocationClick(@NonNull Location location) {
@@ -229,7 +235,19 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
     }
 
 
-    /* ********** Utility method : ********** */
+    /* **********   GoogleMap.OnMarkerClickListener :   ********** */
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Log.i(TAG, "onMarkerClick(...) : " + marker.getTitle());
+
+        Intent intent = new Intent(WorldActivity.this, GameActivity.class);
+        startActivity(intent);
+        return false;
+    }
+
+
+    /* **********   Utility method :    ********** */
 
     private void makeUseOfNewLocation(Location location) {
         Log.i(TAG, "makeUseOfNewLocation - User is located at : latitude = " +
@@ -250,14 +268,16 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
 
     private void addMarker() {
         Log.d(TAG, "onMapReady() - BEFORE - mMap.addMarker(...)");
+        Level level;
 
         for (int i = 0; i < LevelDescription.getNbLevels(); i++) {
+            level = LevelDescription.getLevel(i);
             if (LevelDescription.getLevel(i) != null) {
-                mMap.addMarker(new MarkerOptions().position(LevelDescription.getLevel(i).getPoint())
-                        .icon(BitmapDescriptorFactory.fromPath(LevelDescription.getLevel(i).getPin().getPath())).draggable(true)
-                        .alpha(0.2f)
+                mMap.addMarker(new MarkerOptions().position(level.getPoint())
+                        .icon(BitmapDescriptorFactory.fromPath(level.getPin().getPath())).draggable(false)
+                        .alpha(0.7f)
                         .visible(true)
-                        .title("Fancy title")
+                        .title(String.valueOf(level.getDifficulty()))
                         .snippet("Snippet for this marker"));
             } else {
                 Log.w(TAG, "onMapReady() - Level " + i + " not initialized.");

@@ -121,8 +121,6 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
                         Integer.parseInt(parcedLine[3]) - 1, backgroundFile,
                         toRightCarFile, toLeftCarFile, pinFile);
                 LevelDescription.setLevel(level, indice);
-                onPostExecute(true);
-
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
