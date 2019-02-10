@@ -3,12 +3,15 @@ package com.robinmayo.crossingroads;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.robinmayo.crossingroads.interfaces.TaskDelegate;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -20,10 +23,15 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
     private static final String FILE_PATH
             = "https://www.lrde.epita.fr/~renault/teaching/ppm/2018/game.txt";
 
+    private TaskDelegate delegate;
     private static File gameFile;
+    //private static List<File> downLoadFileList = new ArrayList<File>();
+    private File appDir;
 
-    WebParser(File file) {
+    WebParser(File appDir, File file, TaskDelegate delegate) {
+        this.appDir = appDir;
         WebParser.gameFile = file;
+        this.delegate = delegate;
     }
 
     @Override
@@ -31,7 +39,12 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
         Log.d(TAG, "doInBackground(...)");
 
         // Download file : "https://www.lrde.epita.fr/~renault/teaching/ppm/2018/game.txt"
-        downloadGameFile();
+        try {
+            URL url = new URL(FILE_PATH);
+            downloadFile(url, gameFile);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
 
         // Parse game file and set levels :
         InputStreamReader inputStreamReader;
@@ -52,6 +65,7 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
             }
             lineNumberReader.close();
             inputStreamReader.close();
+
         }catch (Exception e) {
             System.err.println("Error : "+e.getMessage());
         }
@@ -59,12 +73,10 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
         return true;
     }
 
-    private void downloadGameFile() {
-        URL url;
+    private void downloadFile(URL url, File file) {
         try {
-            url = new URL(FILE_PATH);
             ReadableByteChannel rbc = Channels.newChannel(url.openStream());
-            FileOutputStream fos = new FileOutputStream(gameFile);
+            FileOutputStream fos = new FileOutputStream(file);
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
             fos.close();
             rbc.close();
@@ -75,16 +87,45 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
 
     private void saveLevel(String[] parcedLine, int indice) {
         if (parcedLine.length < 8) {
-            Log.e(TAG, "ERROR in saveLevel(String[] parcedLine) : level can not be created.");
+            Log.e(TAG, "ERROR in saveLevel(String[] parcedLine) : level can not be created "
+                    + "parcedLine.length = " + parcedLine.length + ").");
         } else if (parcedLine.length > 8) {
             Log.w(TAG, "WARNING in saveLevel(String[] parcedLine) : too much information." +
                     "A part of the riding line is ignored.");
         }
         if (parcedLine.length == 8) {
-            Level level = new Level(parcedLine[0], parcedLine[1], parcedLine[2],
-                    Integer.parseInt(parcedLine[3]),  parcedLine[4], parcedLine[5], parcedLine[6],
-                    parcedLine[7]);
-            LevelDescription.setLevel(level, indice);
+            // We get the name of each file as the last element of the path split by "/".
+            String background   = parcedLine[4].split("/")[parcedLine[4].split("/").length - 1];
+            String toRightCar   = parcedLine[5].split("/")[parcedLine[5].split("/").length - 1];
+            String toLeftCar    = parcedLine[6].split("/")[parcedLine[6].split("/").length - 1];
+            String pin          = parcedLine[7].split("/")[parcedLine[7].split("/").length - 1];
+
+            Log.d(TAG, "saveLevel(...) - " + background);
+
+            URL url;
+            try {
+                url = new URL(parcedLine[4]);
+                File backgroundFile = new File(appDir, background);
+                downloadFile(url, backgroundFile);
+                url = new URL(parcedLine[5]);
+                File toRightCarFile = new File(appDir, toRightCar);
+                downloadFile(url, toRightCarFile);
+                url = new URL(parcedLine[6]);
+                File toLeftCarFile = new File(appDir, toLeftCar);
+                downloadFile(url, toLeftCarFile);
+                url = new URL(parcedLine[7]);
+                File pinFile = new File(appDir, pin);
+                downloadFile(url, pinFile);
+
+                Level level = new Level(parcedLine[0], parcedLine[1], parcedLine[2],
+                        Integer.parseInt(parcedLine[3]) - 1, backgroundFile,
+                        toRightCarFile, toLeftCarFile, pinFile);
+                LevelDescription.setLevel(level, indice);
+                onPostExecute(true);
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -94,6 +135,7 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
 
         if (success) {
             Log.d(TAG, "onPostExecute(...) : SUCCESS");
+            delegate.taskCompletionResult();
         }
     }
 

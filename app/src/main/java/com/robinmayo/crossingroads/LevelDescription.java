@@ -1,10 +1,15 @@
 package com.robinmayo.crossingroads;
 
-public class LevelDescription {
-    private static Level[] levels;
-    private static int nbLevels = 0;
+import android.util.Log;
 
-    public LevelDescription(int nbLevels) {
+class LevelDescription {
+    private static final String TAG = "LevelDescription";
+    private static int nbLevels = 5;
+    private static Level[] levels = new Level[nbLevels];
+
+    LevelDescription(int nbLevels) {
+        Log.w(TAG, "new LevelDescription(int nbLevels)");
+
         LevelDescription.nbLevels = nbLevels;
         levels = new Level[nbLevels];
     }
@@ -15,16 +20,20 @@ public class LevelDescription {
      *
      * Warning : can return null. Think to test return value.
      */
-    public static Level getLevel(int indice) {
+    static Level getLevel(int indice) {
         if (indice < nbLevels) {
             return levels[indice];
         }
         return null;
     }
 
-    public static void setLevel(Level level, int indice) {
+    static void setLevel(Level level, int indice) {
         if (indice < nbLevels) {
             levels[indice] = level;
         }
+    }
+
+    static int getNbLevels() {
+        return nbLevels;
     }
 }

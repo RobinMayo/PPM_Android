@@ -21,8 +21,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.robinmayo.crossingroads.interfaces.TaskDelegate;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,12 +43,20 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
     private static final int LOCATION_REQUEST=INITIAL_REQUEST+3;
 
     private static final String TAG = "WorldActivity";
-    protected static final String GAME_FILE = "game.txt";
+    private static final String GAME_FILE = "game.txt";
 
     protected FloatingActionButton profileButton;
     protected FloatingActionButton scoreButton;
     protected GoogleMap mMap;
     private static Intent musicIntent;
+
+    private TaskDelegate taskDelegate = new TaskDelegate() {
+        @Override
+        public void taskCompletionResult() {
+            addMarker();
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +67,10 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
         new Player();
 
         // getApplicationContext().getFilesDir() is an internal directory in the application.
+        getApplicationContext().getFilesDir();
         File gameFile = new File(getApplicationContext().getFilesDir(), GAME_FILE);
-        WebParser webParser = new WebParser(gameFile);
+        WebParser webParser = new WebParser(getApplicationContext().getFilesDir(), gameFile,
+                taskDelegate);
         webParser.execute();
 
         musicIntent = new Intent(this, UnboundedService.class);
@@ -119,6 +131,13 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
         this.stopService(musicIntent);
     }
 
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+        Log.d(TAG, "onPointerCaptureChanged(...)");
+    }
+
+
+    /* ********** OnMapReadyCallback ********** */
 
     /**
      * Manipulates the map once available.
@@ -183,7 +202,7 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
                 };
                 // Register the listener with the Location Manager to receive location updates.
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                        20000, 0, locationListener);
+                        30000, 0, locationListener);
             } else {
                 Log.e(TAG, "ERROR in onMapReady(GoogleMap googleMap) : can not acces to user"
                         + "location by locationManager. The game is not playable !");
@@ -191,10 +210,8 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
         }
     }
 
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-        Log.d(TAG, "onPointerCaptureChanged(...)");
-    }
+
+    /* ********** GoogleMap.OnMyLocationButtonClickListener ********** */
 
     @Override
     public boolean onMyLocationButtonClick() {
@@ -202,11 +219,17 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
         return false;
     }
 
+
+    /* ********** GoogleMap.OnMyLocationClickListener ********** */
+
     @Override
     public void onMyLocationClick(@NonNull Location location) {
         Log.d(TAG, "onMyLocationClick(...)");
         makeUseOfNewLocation(location);
     }
+
+
+    /* ********** Utility method : ********** */
 
     private void makeUseOfNewLocation(Location location) {
         Log.i(TAG, "makeUseOfNewLocation - User is located at : latitude = " +
@@ -222,6 +245,23 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
         }
         catch (NullPointerException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void addMarker() {
+        Log.d(TAG, "onMapReady() - BEFORE - mMap.addMarker(...)");
+
+        for (int i = 0; i < LevelDescription.getNbLevels(); i++) {
+            if (LevelDescription.getLevel(i) != null) {
+                mMap.addMarker(new MarkerOptions().position(LevelDescription.getLevel(i).getPoint())
+                        .icon(BitmapDescriptorFactory.fromPath(LevelDescription.getLevel(i).getPin().getPath())).draggable(true)
+                        .alpha(0.2f)
+                        .visible(true)
+                        .title("Fancy title")
+                        .snippet("Snippet for this marker"));
+            } else {
+                Log.w(TAG, "onMapReady() - Level " + i + " not initialized.");
+            }
         }
     }
 }
