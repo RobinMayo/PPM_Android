@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.robinmayo.crossingroads">
 
     <!--
@@ -8,17 +9,11 @@
          location permissions for the 'MyLocation' functionality. 
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!--
-        <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
         Unnecessary since ACCESS_FINE_LOCATION include ACCESS_COARSE_LOCATION
     -->
     <uses-permission android:name="android.permission.INTERNET" />
-
-    <!-- To auto-complete the email text field in the login form with the user's emails
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
-    -->
 
     <application
         android:allowBackup="true"
@@ -26,7 +21,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:fullBackupContent="@xml/backup_rules"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity android:name="com.robinmayo.crossingroads.WorldActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -56,7 +53,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
         <uses-library android:name="com.google.android.maps" />
-
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
 
         <service android:name="com.robinmayo.crossingroads.UnboundedService"

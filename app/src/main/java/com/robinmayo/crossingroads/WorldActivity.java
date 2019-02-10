@@ -1,11 +1,19 @@
 package com.robinmayo.crossingroads;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -17,7 +25,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.File;
 
 
-public class WorldActivity extends FragmentActivity implements OnMapReadyCallback {
+public class WorldActivity extends FragmentActivity implements OnMapReadyCallback,
+        GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener {
+
+    private static final String[] LOCATION_PERMS = {
+            Manifest.permission.ACCESS_FINE_LOCATION
+    };
+
+    private static final int INITIAL_REQUEST=1337;
+    private static final int LOCATION_REQUEST=INITIAL_REQUEST+3;
+
     private static final String TAG = "WorldActivity";
     protected static final String GAME_FILE = "game.txt";
 
@@ -25,8 +42,6 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
     protected FloatingActionButton scoreButton;
     protected GoogleMap mMap;
     private static Intent musicIntent;
-    private static File gameFile;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,12 +52,14 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
         new Player();
 
         // getApplicationContext().getFilesDir() is an internal directory in the application.
-        gameFile = new File(getApplicationContext().getFilesDir(), GAME_FILE);
+        File gameFile = new File(getApplicationContext().getFilesDir(), GAME_FILE);
         WebParser webParser = new WebParser(gameFile);
         webParser.execute();
 
         musicIntent = new Intent(this, UnboundedService.class);
         startService(musicIntent);
+
+        requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
 
         // Buttons :
         profileButton = findViewById(R.id.profileButton);
@@ -68,7 +85,12 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        } else {
+            Log.e(TAG, "ERROR in onCreate(Bundle savedInstanceState) : can not access to map "
+                    + " by mapFragment !");
+        }
     }
 
     // The activity is note visible.
@@ -110,9 +132,79 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            Log.e(TAG, "ERROR : in onMapReady(GoogleMap googleMap) : can not acces to user" +
+                    " position. The game is not playable !");
+            Toast.makeText(this, R.string.error_invalid_location_permission,
+                    Toast.LENGTH_SHORT).show();
+            requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
+        } else {
+            mMap.setMyLocationEnabled(true);
+
+            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            if (locationManager != null) {
+
+                // Define a listener that responds to location updates
+                LocationListener locationListener = new LocationListener() {
+
+                    public void onLocationChanged(Location location) {
+                        // Called when a new location is found by the network location provider.
+                        Log.d(TAG, "onLocationChanged(...)");
+                        makeUseOfNewLocation(location);
+                    }
+
+                    public void onStatusChanged(String provider, int status, Bundle extras) {
+                        Log.d(TAG, "onStatusChanged(...)");
+                    }
+
+                    public void onProviderEnabled(String provider) {
+                        Log.d(TAG, "onProviderEnabled(...)");
+                    }
+
+                    public void onProviderDisabled(String provider) {
+                        Log.d(TAG, "onProviderDisabled(...)");
+                    }
+                };
+                // Register the listener with the Location Manager to receive location updates.
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        10000, 0, locationListener);
+            } else {
+                Log.e(TAG, "ERROR in onMapReady(GoogleMap googleMap) : can not acces to user"
+                        + "location by locationManager. The game is not playable !");
+            }
+        }
     }
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
+        Log.d(TAG, "onPointerCaptureChanged(...)");
+    }
+
+    @Override
+    public boolean onMyLocationButtonClick() {
+        Log.d(TAG, "onMyLocationButtonClick()");
+        return false;
+    }
+
+    @Override
+    public void onMyLocationClick(@NonNull Location location) {
+        Log.d(TAG, "onMyLocationClick(...)");
+        makeUseOfNewLocation(location);
+    }
+
+    private void makeUseOfNewLocation(Location location) {
+        Log.i(TAG, "makeUseOfNewLocation - User is located at : latitude = " +
+                location.getLatitude() + ", longitude " + location.getLongitude() + ".");
     }
 }
