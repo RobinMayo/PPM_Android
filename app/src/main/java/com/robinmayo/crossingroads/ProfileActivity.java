@@ -21,7 +21,7 @@ import android.widget.TextView;
 /**
  * A login screen that offers login via email/password.
  */
-public class ProfileActivity extends AppCompatActivity /*implements LoaderCallbacks<Cursor> */{
+public class ProfileActivity extends AppCompatActivity {
 
     private static final String TAG = "ProfileActivity";
 
@@ -62,7 +62,6 @@ public class ProfileActivity extends AppCompatActivity /*implements LoaderCallba
         nameSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                //attemptLogin();
                 Intent intent = new Intent(ProfileActivity.this, WorldActivity.class);
                 startActivity(intent);
             }
@@ -73,6 +72,7 @@ public class ProfileActivity extends AppCompatActivity /*implements LoaderCallba
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume("+Player.getName()+", "+Player.getMotto()+")");
 
         // Initialise Player Ids :
         if (!Player.getName().equals("") && !Player.getMotto().equals("")) {
@@ -81,19 +81,19 @@ public class ProfileActivity extends AppCompatActivity /*implements LoaderCallba
         }
     }
 
-    // The application is note visible.
-    @Override
-    protected void onStop() {
-        Log.d(TAG, "onStop("+nameView.getText().toString()+
-                ", "+mottoView.getText().toString()+")");
-        super.onStop();
-    }
-
     // The activity is note visible.
     @Override
     protected void onPause() {
         super.onPause();
         Log.d(TAG, "onPause("+nameView.getText().toString()+
+                ", "+mottoView.getText().toString()+")");
+    }
+
+    // The application is note visible.
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop("+nameView.getText().toString()+
                 ", "+mottoView.getText().toString()+")");
     }
 
@@ -191,8 +191,6 @@ public class ProfileActivity extends AppCompatActivity /*implements LoaderCallba
 
             Player.setName(name);
             Player.setMotto(motto);
-            Player.setLevel(0);
-
             return true;
         }
 
@@ -204,7 +202,6 @@ public class ProfileActivity extends AppCompatActivity /*implements LoaderCallba
 
             if (success) {
                 Log.d(TAG, "onPostExecute(...) : SUCCESS");
-                //setContentView(R.layout.activity_profile);
                 finish();
             }
         }
