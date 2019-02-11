@@ -1,10 +1,7 @@
 package com.robinmayo.Blottiere_Boukhelif;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.robinmayo.Blottiere_Boukhelif.interfaces.TaskDelegate;
 
@@ -29,20 +26,17 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
             = "https://www.lrde.epita.fr/~renault/teaching/ppm/2018/results.txt";
 
     private TaskDelegate delegate;
-    private Context context;
     private static File gameFile;
     private static File scoreFile;
     private File appDir;
-    private ProgressBar mProgressBar;
 
 
-    public WebParser(Context context, File appDir, File gameFile, File scoreFile,
+    public WebParser(File appDir, File gameFile, File scoreFile,
                      TaskDelegate delegate) {
         this.appDir = appDir;
         WebParser.gameFile = gameFile;
         this.delegate = delegate;
         WebParser.scoreFile = scoreFile;
-        this.context = context;
     }
 
     @Override
@@ -88,7 +82,7 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
             Log.e(TAG, "doInBackground(...) - download files END");
         } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(context, "Low connection", Toast.LENGTH_LONG).show();
+            //Toast.makeText(context, "Low connection", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -131,13 +125,11 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
             inputStreamReader = new InputStreamReader(new FileInputStream(scoreFile));
             lineNumberReader = new LineNumberReader(inputStreamReader);
 
-            int indice = 0;
             while ((myLine = lineNumberReader.readLine()) != null) {
                 Log.d(TAG, myLine);
                 parcedLine = myLine.split("#");
                 Log.i(TAG, Arrays.toString(parcedLine));
-                saveScore(parcedLine, indice);
-                indice++;
+                saveScore(parcedLine);
             }
             lineNumberReader.close();
             inputStreamReader.close();
@@ -192,7 +184,7 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
         }
     }
 
-    private void saveScore(String[] parcedLine, int indice) {
+    private void saveScore(String[] parcedLine) {
         if (parcedLine.length < 4) {
             Log.e(TAG, "ERROR in saveScore(String[] parcedLine) : score list can not be "
                     + "created parcedLine.length = " + parcedLine.length + ").");

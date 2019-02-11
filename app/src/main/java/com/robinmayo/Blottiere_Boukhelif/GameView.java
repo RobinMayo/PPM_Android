@@ -99,9 +99,10 @@ public class GameView extends View {
         playerX = (width / 2) - (playerInSize.getWidth() / 2);
         playerX = (height / 2) - (playerInSize.getHeight() / 2);
 
-        carSpeed = difficulty;
+        carSpeed = difficulty + 1;
         life = 3;
 
+        /*
         alert = new AlertDialog.Builder(context)
                 .setTitle("Delete entry")
                 .setMessage("Are you sure you want to delete this entry?")
@@ -110,6 +111,7 @@ public class GameView extends View {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {}
                         }).show();
+         */
     }
 
 
@@ -144,7 +146,7 @@ public class GameView extends View {
         }
         if (life < 0) {
             //Thread.interrupted();
-            alert.create();
+            //alert.create();
         }
 
         canvas.drawBitmap(backgroundImage, 0, 0, null);
@@ -198,8 +200,8 @@ public class GameView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_MOVE ||
                 event.getAction() == MotionEvent.ACTION_DOWN) {
-            playerX = (int)(event.getRawX() - playerInSize.getWidth() * 0.5);
-            playerY = (int)(event.getRawY() - playerInSize.getHeight() * 0.20);
+            playerX = (int)(event.getRawX() - playerInSize.getWidth() * 0.3);
+            playerY = (int)(event.getRawY() - playerInSize.getHeight() * 0.10);
         }
         return true;
     }

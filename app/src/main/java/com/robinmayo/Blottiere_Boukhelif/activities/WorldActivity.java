@@ -80,7 +80,7 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
         // getApplicationContext().getFilesDir() is an internal directory in the application.
         File gameFile = new File(getApplicationContext().getFilesDir(), GAME_FILE);
         File scoreFile = new File(getApplicationContext().getFilesDir(), SCORE_FILE);
-        WebParser webParser = new WebParser(this, getApplicationContext().getFilesDir(), gameFile,
+        WebParser webParser = new WebParser(getApplicationContext().getFilesDir(), gameFile,
                 scoreFile, taskDelegate);
         webParser.execute();
 
