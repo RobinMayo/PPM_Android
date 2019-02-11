@@ -79,7 +79,6 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
         new Player();
 
         // getApplicationContext().getFilesDir() is an internal directory in the application.
-        getApplicationContext().getFilesDir();
         File gameFile = new File(getApplicationContext().getFilesDir(), GAME_FILE);
         WebParser webParser = new WebParser(getApplicationContext().getFilesDir(), gameFile,
                 taskDelegate);
@@ -171,12 +170,10 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setOnMarkerClickListener(this);
-        // GoogleMap.OnMapClickListener clickListener = new GoogleMap.OnMapClickListener();
-        // mMap.setOnMapClickListener(clickListener);
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        // Add a marker in Paris and move the camera
+        LatLng sydney = new LatLng(48.866667, 2.333333);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Paris"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
         if (ActivityCompat.checkSelfPermission(this,

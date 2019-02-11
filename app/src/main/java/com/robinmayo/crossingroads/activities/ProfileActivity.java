@@ -16,6 +16,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.robinmayo.crossingroads.Player;
 import com.robinmayo.crossingroads.R;
@@ -90,6 +91,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onPause();
         Log.d(TAG, "onPause("+nameView.getText().toString()+
                 ", "+mottoView.getText().toString()+")");
+        Toast.makeText(this, this.getString(R.string.saved), Toast.LENGTH_LONG).show();
     }
 
     // The application is note visible.

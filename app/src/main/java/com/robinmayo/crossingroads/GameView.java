@@ -11,6 +11,7 @@ import android.graphics.Typeface;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import java.io.File;
 
@@ -34,6 +35,7 @@ public class GameView extends View {
     private int car2X, car2Y;
     private int carSpeed;
     private int difficulty;
+    private Context context;
 
     private boolean touch = false;
 
@@ -44,11 +46,14 @@ public class GameView extends View {
 
     public GameView(Context context) {
         super(context);
+        this.context = context;
     }
 
     public GameView(Context context, int difficulty, File background, File toRightCar,
                     File toLeftCar) {
         super(context);
+
+        this.context = context;
 
         int width = Resources.getSystem().getDisplayMetrics().widthPixels;
         int height = Resources.getSystem().getDisplayMetrics().heightPixels;
@@ -103,7 +108,7 @@ public class GameView extends View {
 
         int w = this.getWidth();
         //int h = this.getHeight();
-        int margine = 30;
+        int margine = 50;
 
         if (playerY > maxPlayerY) {
             playerY = maxPlayerY;
@@ -126,20 +131,21 @@ public class GameView extends View {
             life = life - 1;
             car2X = w;
         }
+        if (life < 0) {
+            //Thread.interrupted();
+        }
 
         canvas.drawBitmap(backgroundImage, 0, 0, null);
         String levelName = "Level : " + difficulty;
         String remainingLives = "Life : " + life;
         canvas.drawText(levelName, margine, margine, scorePaint);
-        canvas.drawText(remainingLives, w - scorePaint.measureText(remainingLives), margine,
-                scorePaint);
+        canvas.drawText(remainingLives, w - (scorePaint.measureText(remainingLives) + margine),
+                margine, scorePaint);
 
         if(touch) {
-            canvas.drawBitmap(playerInSize, playerX, playerY,null);
             touch = false;
-        } else {
-            canvas.drawBitmap(playerInSize, playerX, playerY,null);
         }
+        canvas.drawBitmap(playerInSize, playerX, playerY,null);
 
         car1X = car1X + carSpeed;
         if (car1X > w){
