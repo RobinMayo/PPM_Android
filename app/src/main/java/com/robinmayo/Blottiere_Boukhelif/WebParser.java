@@ -1,9 +1,12 @@
-package com.robinmayo.crossingroads;
+package com.robinmayo.Blottiere_Boukhelif;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
-import com.robinmayo.crossingroads.interfaces.TaskDelegate;
+import com.robinmayo.Blottiere_Boukhelif.interfaces.TaskDelegate;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,27 +29,32 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
             = "https://www.lrde.epita.fr/~renault/teaching/ppm/2018/results.txt";
 
     private TaskDelegate delegate;
+    private Context context;
     private static File gameFile;
     private static File scoreFile;
     private File appDir;
+    private ProgressBar mProgressBar;
 
-    public WebParser(File appDir, File gameFile, File scoreFile, TaskDelegate delegate) {
+
+    public WebParser(Context context, File appDir, File gameFile, File scoreFile,
+                     TaskDelegate delegate) {
         this.appDir = appDir;
         WebParser.gameFile = gameFile;
         this.delegate = delegate;
         WebParser.scoreFile = scoreFile;
+        this.context = context;
     }
 
     @Override
     protected Boolean doInBackground(Void... params) {
-        Log.d(TAG, "doInBackground(...)");
+        Log.e(TAG, "doInBackground(...)");
 
         // Download file : "https://www.lrde.epita.fr/~renault/teaching/ppm/2018/game.txt"
         try {
             URL url = new URL(FILE_PATH);
             downloadFile(url, gameFile);
             url = new URL(SCORE_FILE);
-            downloadFile(url, gameFile);
+            downloadFile(url, scoreFile);
         } catch (MalformedURLException e) {
             e.printStackTrace();
             return false;
@@ -59,15 +67,28 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
         return affectScore();
     }
 
+    /*
+    @Override
+    protected void onProgressUpdate(Integer... values) {
+        super.onProgressUpdate(values);
+        mProgressBar.setProgress(values[0]);
+    }
+    */
+
     private void downloadFile(URL url, File file) {
         try {
+            Log.e(TAG, "doInBackground(...) - download files BEGIN");
+
             ReadableByteChannel rbc = Channels.newChannel(url.openStream());
             FileOutputStream fos = new FileOutputStream(file);
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
             fos.close();
             rbc.close();
+
+            Log.e(TAG, "doInBackground(...) - download files END");
         } catch (IOException e) {
             e.printStackTrace();
+            Toast.makeText(context, "Low connection", Toast.LENGTH_LONG).show();
         }
     }
 

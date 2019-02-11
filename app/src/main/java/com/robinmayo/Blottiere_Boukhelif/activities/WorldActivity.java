@@ -1,4 +1,4 @@
-package com.robinmayo.crossingroads.activities;
+package com.robinmayo.Blottiere_Boukhelif.activities;
 
 import android.Manifest;
 import android.content.Intent;
@@ -25,13 +25,13 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.robinmayo.crossingroads.Level;
-import com.robinmayo.crossingroads.LevelDescription;
-import com.robinmayo.crossingroads.Player;
-import com.robinmayo.crossingroads.R;
-import com.robinmayo.crossingroads.UnboundedService;
-import com.robinmayo.crossingroads.WebParser;
-import com.robinmayo.crossingroads.interfaces.TaskDelegate;
+import com.robinmayo.Blottiere_Boukhelif.Level;
+import com.robinmayo.Blottiere_Boukhelif.LevelDescription;
+import com.robinmayo.Blottiere_Boukhelif.Player;
+import com.robinmayo.Blottiere_Boukhelif.R;
+import com.robinmayo.Blottiere_Boukhelif.UnboundedService;
+import com.robinmayo.Blottiere_Boukhelif.WebParser;
+import com.robinmayo.Blottiere_Boukhelif.interfaces.TaskDelegate;
 
 import java.io.File;
 import java.io.IOException;
@@ -80,7 +80,7 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
         // getApplicationContext().getFilesDir() is an internal directory in the application.
         File gameFile = new File(getApplicationContext().getFilesDir(), GAME_FILE);
         File scoreFile = new File(getApplicationContext().getFilesDir(), SCORE_FILE);
-        WebParser webParser = new WebParser(getApplicationContext().getFilesDir(), gameFile,
+        WebParser webParser = new WebParser(this, getApplicationContext().getFilesDir(), gameFile,
                 scoreFile, taskDelegate);
         webParser.execute();
 

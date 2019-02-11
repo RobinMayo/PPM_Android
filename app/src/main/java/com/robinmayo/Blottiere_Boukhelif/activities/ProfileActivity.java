@@ -1,4 +1,4 @@
-package com.robinmayo.crossingroads.activities;
+package com.robinmayo.Blottiere_Boukhelif.activities;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -18,8 +18,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.robinmayo.crossingroads.Player;
-import com.robinmayo.crossingroads.R;
+import com.robinmayo.Blottiere_Boukhelif.Player;
+import com.robinmayo.Blottiere_Boukhelif.R;
 
 
 /**

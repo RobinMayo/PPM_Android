@@ -1,4 +1,4 @@
-package com.robinmayo.crossingroads.interfaces;
+package com.robinmayo.Blottiere_Boukhelif.interfaces;
 
 public interface TaskDelegate {
     void taskCompletionResult();

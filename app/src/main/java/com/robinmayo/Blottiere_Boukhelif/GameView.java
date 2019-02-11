@@ -1,6 +1,7 @@
-package com.robinmayo.crossingroads;
+package com.robinmayo.Blottiere_Boukhelif;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,10 +9,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 
 import java.io.File;
 
@@ -36,6 +37,7 @@ public class GameView extends View {
     private int carSpeed;
     private int difficulty;
     private Context context;
+    private AlertDialog alert;
 
     private boolean touch = false;
 
@@ -99,6 +101,15 @@ public class GameView extends View {
 
         carSpeed = difficulty;
         life = 3;
+
+        alert = new AlertDialog.Builder(context)
+                .setTitle("Delete entry")
+                .setMessage("Are you sure you want to delete this entry?")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {}
+                        }).show();
     }
 
 
@@ -133,6 +144,7 @@ public class GameView extends View {
         }
         if (life < 0) {
             //Thread.interrupted();
+            alert.create();
         }
 
         canvas.drawBitmap(backgroundImage, 0, 0, null);

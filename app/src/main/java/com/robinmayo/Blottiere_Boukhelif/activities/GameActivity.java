@@ -1,12 +1,12 @@
-package com.robinmayo.crossingroads.activities;
+package com.robinmayo.Blottiere_Boukhelif.activities;
 
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.robinmayo.crossingroads.GameView;
-import com.robinmayo.crossingroads.Level;
+import com.robinmayo.Blottiere_Boukhelif.GameView;
+import com.robinmayo.Blottiere_Boukhelif.Level;
 
 import java.util.Timer;
 import java.util.TimerTask;

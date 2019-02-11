@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.robinmayo.crossingroads">
+    package="com.robinmayo.Blottiere_Boukhelif">
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -24,7 +24,7 @@
         android:theme="@style/AppTheme"
         android:fullBackupContent="@xml/backup_rules"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name="com.robinmayo.crossingroads.activities.WorldActivity">
+        <activity android:name="com.robinmayo.Blottiere_Boukhelif.activities.WorldActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -40,7 +40,7 @@
                 -->
             </intent-filter>
         </activity>
-        <activity android:name="com.robinmayo.crossingroads.activities.GameActivity" />
+        <activity android:name="com.robinmayo.Blottiere_Boukhelif.activities.GameActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -55,13 +55,13 @@
         <uses-library android:name="com.google.android.maps" />
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
 
-        <service android:name="com.robinmayo.crossingroads.UnboundedService"
+        <service android:name="com.robinmayo.Blottiere_Boukhelif.UnboundedService"
             android:enabled="true" />
 
         <activity
-            android:name="com.robinmayo.crossingroads.activities.ProfileActivity"
+            android:name="com.robinmayo.Blottiere_Boukhelif.activities.ProfileActivity"
             android:label="@string/title_activity_profile" />
-        <activity android:name="com.robinmayo.crossingroads.activities.StatisticsActivity" />
+        <activity android:name="com.robinmayo.Blottiere_Boukhelif.activities.StatisticsActivity" />
     </application>
 
 </manifest>
