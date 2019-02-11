@@ -1,10 +1,8 @@
 package com.robinmayo.crossingroads.activities;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Icon;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -54,6 +52,7 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
 
     private static final String TAG = "WorldActivity";
     private static final String GAME_FILE = "game.txt";
+    private static final String SCORE_FILE = "score.txt";
 
     protected FloatingActionButton profileButton;
     protected FloatingActionButton scoreButton;
@@ -80,8 +79,9 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
 
         // getApplicationContext().getFilesDir() is an internal directory in the application.
         File gameFile = new File(getApplicationContext().getFilesDir(), GAME_FILE);
+        File scoreFile = new File(getApplicationContext().getFilesDir(), SCORE_FILE);
         WebParser webParser = new WebParser(getApplicationContext().getFilesDir(), gameFile,
-                taskDelegate);
+                scoreFile, taskDelegate);
         webParser.execute();
 
         // Do not play music on the main thread.

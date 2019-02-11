@@ -22,16 +22,19 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
     private static final String TAG = "WebParser";
     private static final String FILE_PATH
             = "https://www.lrde.epita.fr/~renault/teaching/ppm/2018/game.txt";
+    private static final String SCORE_FILE
+            = "https://www.lrde.epita.fr/~renault/teaching/ppm/2018/results.txt";
 
     private TaskDelegate delegate;
     private static File gameFile;
-    //private static List<File> downLoadFileList = new ArrayList<File>();
+    private static File scoreFile;
     private File appDir;
 
-    public WebParser(File appDir, File file, TaskDelegate delegate) {
+    public WebParser(File appDir, File gameFile, File scoreFile, TaskDelegate delegate) {
         this.appDir = appDir;
-        WebParser.gameFile = file;
+        WebParser.gameFile = gameFile;
         this.delegate = delegate;
+        WebParser.scoreFile = scoreFile;
     }
 
     @Override
@@ -42,11 +45,34 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
         try {
             URL url = new URL(FILE_PATH);
             downloadFile(url, gameFile);
+            url = new URL(SCORE_FILE);
+            downloadFile(url, gameFile);
         } catch (MalformedURLException e) {
             e.printStackTrace();
+            return false;
         }
 
-        // Parse game file and set levels :
+        if (!affectLevels()) {
+            return false;
+        }
+
+        return affectScore();
+    }
+
+    private void downloadFile(URL url, File file) {
+        try {
+            ReadableByteChannel rbc = Channels.newChannel(url.openStream());
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+            fos.close();
+            rbc.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Parse game file and set levels :
+    private boolean affectLevels() {
         InputStreamReader inputStreamReader;
         LineNumberReader lineNumberReader;
         String myLine;
@@ -68,21 +94,39 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
 
         }catch (Exception e) {
             System.err.println("Error : "+e.getMessage());
+            return false;
         }
 
         return true;
     }
 
-    private void downloadFile(URL url, File file) {
+    // Parse score file and set score list :
+    private boolean affectScore() {
+        InputStreamReader inputStreamReader;
+        LineNumberReader lineNumberReader;
+        String myLine;
+        String[] parcedLine;
         try {
-            ReadableByteChannel rbc = Channels.newChannel(url.openStream());
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-            fos.close();
-            rbc.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+            inputStreamReader = new InputStreamReader(new FileInputStream(scoreFile));
+            lineNumberReader = new LineNumberReader(inputStreamReader);
+
+            int indice = 0;
+            while ((myLine = lineNumberReader.readLine()) != null) {
+                Log.d(TAG, myLine);
+                parcedLine = myLine.split("#");
+                Log.i(TAG, Arrays.toString(parcedLine));
+                saveScore(parcedLine, indice);
+                indice++;
+            }
+            lineNumberReader.close();
+            inputStreamReader.close();
+
+        }catch (Exception e) {
+            System.err.println("Error : "+e.getMessage());
+            return false;
         }
+
+        return true;
     }
 
     private void saveLevel(String[] parcedLine, int indice) {
@@ -124,6 +168,25 @@ public class WebParser extends AsyncTask<Void, Void, Boolean> {
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void saveScore(String[] parcedLine, int indice) {
+        if (parcedLine.length < 4) {
+            Log.e(TAG, "ERROR in saveScore(String[] parcedLine) : score list can not be "
+                    + "created parcedLine.length = " + parcedLine.length + ").");
+            return;
+        } else if (parcedLine.length > 4) {
+            Log.w(TAG, "WARNING in saveScore(String[] parcedLine) : too much information." +
+                    "A part of the riding line is ignored.");
+        }
+        // Extract data from line.
+        if (parcedLine.length == 4) {
+            Log.d(TAG, "saveScore(...) - " + parcedLine[3]);
+
+            Score score = new Score(parcedLine[0], parcedLine[1], parcedLine[2], parcedLine[3]);
+
+            ScoreList.getListScore().add(score);
         }
     }
 
