@@ -1,6 +1,7 @@
 package com.robinmayo.crossingroads.activities;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Icon;
@@ -84,8 +85,15 @@ public class WorldActivity extends FragmentActivity implements OnMapReadyCallbac
                 taskDelegate);
         webParser.execute();
 
-        musicIntent = new Intent(this, UnboundedService.class);
-        startService(musicIntent);
+        // Do not play music on the main thread.
+        Thread thread = new Thread(){
+            @Override
+            public void run() {
+                musicIntent = new Intent(WorldActivity.this, UnboundedService.class);
+                startService(musicIntent);
+            }
+        };
+        thread.start();
 
         requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
 
